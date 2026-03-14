@@ -1,0 +1,84 @@
+{
+  "$schema": "https://wvw.dev/apps.schema.json",
+  "store": {
+    "name": "Akeslo Apps",
+    "developer": "akeslo",
+    "github": "https://github.com/akeslo"
+  },
+  "categories": [],
+  "apps": [
+    {
+      "id": "podcast-ad-remover",
+      "name": "Podcast Ad Remover",
+      "subtitle": "Skip the ads, keep the content",
+      "description": "Automatically detects and removes advertisements from podcast audio files.",
+      "category": ["audio", "utilities"],
+      "platform": "Python",
+      "price": "Free",
+      "github": "https://github.com/akeslo/podcast-ad-remover"
+    },
+    {
+      "id": "rerun-timer",
+      "name": "Rerun Timer",
+      "subtitle": "The Infinite Loop Timer",
+      "description": "A looping timer that automatically restarts, perfect for interval training and recurring tasks.",
+      "category": ["productivity", "utilities"],
+      "platform": "iOS",
+      "price": "Free",
+      "github": "https://github.com/akeslo",
+      "appStore": "https://apps.apple.com/us/app/rerun-timer/id6755941416"
+    },
+    {
+      "id": "pinkcloud-timer",
+      "name": "PinkCloud Timer",
+      "subtitle": "Personal sobriety companion",
+      "description": "A personal sobriety companion that tracks your journey and celebrates your milestones.",
+      "category": ["health", "lifestyle"],
+      "platform": "iOS",
+      "price": "Free",
+      "github": "https://github.com/akeslo",
+      "appStore": "https://apps.apple.com/us/app/pinkcloud-timer/id6744997715"
+    },
+    {
+      "id": "breathe-wisely",
+      "name": "Breathe Wisely",
+      "subtitle": "Simple Stress Relief",
+      "description": "A simple breathing exercise app designed for quick and effective stress relief.",
+      "category": ["health", "wellness"],
+      "platform": "iOS",
+      "price": "Free",
+      "github": "https://github.com/akeslo",
+      "appStore": "https://apps.apple.com/us/app/breathe-wisely/id6744491087"
+    },
+    {
+      "id": "unified-audio-control",
+      "name": "Unified Audio Control",
+      "subtitle": "One control for all your audio",
+      "description": "Centralized audio management tool for controlling multiple audio sources from one interface.",
+      "category": ["audio", "utilities"],
+      "platform": "Python",
+      "price": "Free",
+      "github": "https://github.com/akeslo/Unified-Audio-Control"
+    },
+    {
+      "id": "whisperwrap",
+      "name": "WhisperWrap",
+      "subtitle": "Whisper made easy",
+      "description": "A convenient wrapper for OpenAI Whisper, simplifying speech-to-text transcription workflows.",
+      "category": ["audio", "developer-tools"],
+      "platform": "Python",
+      "price": "Free",
+      "github": "https://github.com/akeslo/WhisperWrap"
+    },
+    {
+      "id": "ai-user-scripts",
+      "name": "AI User Scripts",
+      "subtitle": "AI-powered browser scripts",
+      "description": "A collection of AI-enhanced user scripts for automating and improving browser workflows.",
+      "category": ["automation", "developer-tools"],
+      "platform": "JavaScript",
+      "price": "Free",
+      "github": "https://github.com/akeslo/AI_User_Scripts"
+    }
+  ]
+}
