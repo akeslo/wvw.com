@@ -5,14 +5,25 @@
     "developer": "akeslo",
     "github": "https://github.com/akeslo"
   },
-  "categories": [],
+  "categories": [
+    { "id": "ios", "name": "iOS" },
+    { "id": "macos", "name": "macOS" },
+    { "id": "audio", "name": "Audio" },
+    { "id": "utilities", "name": "Utilities" },
+    { "id": "productivity", "name": "Productivity" },
+    { "id": "health", "name": "Health & Wellness" },
+    { "id": "developer-tools", "name": "Developer Tools" },
+    { "id": "automation", "name": "Automation" }
+  ],
   "apps": [
     {
       "id": "podcast-ad-remover",
       "name": "Podcast Ad Remover",
       "subtitle": "Skip the ads, keep the content",
       "description": "Automatically detects and removes advertisements from podcast audio files.",
-      "category": ["audio", "utilities"],
+      "icon": null,
+      "iconEmoji": "🎙️",
+      "category": ["macos", "audio", "utilities"],
       "platform": "Python",
       "price": "Free",
       "github": "https://github.com/akeslo/podcast-ad-remover"
@@ -22,40 +33,48 @@
       "name": "Rerun Timer",
       "subtitle": "The Infinite Loop Timer",
       "description": "A looping timer that automatically restarts, perfect for interval training and recurring tasks.",
-      "category": ["productivity", "utilities"],
+      "icon": "https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/0e/98/c3/0e98c388-eb8a-3d15-dba3-34d3600b76d9/AppIcon-0-0-1x_U007epad-0-1-85-220.png/512x512bb.jpg",
+      "iconEmoji": "⏱️",
+      "category": ["ios", "productivity", "utilities"],
       "platform": "iOS",
       "price": "Free",
       "github": "https://github.com/akeslo",
-      "appStore": "https://apps.apple.com/us/app/rerun-timer/id6755941416"
+      "homepage": "https://apps.apple.com/us/app/rerun-timer/id6755941416"
     },
     {
       "id": "pinkcloud-timer",
       "name": "PinkCloud Timer",
       "subtitle": "Personal sobriety companion",
       "description": "A personal sobriety companion that tracks your journey and celebrates your milestones.",
-      "category": ["health", "lifestyle"],
+      "icon": "https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/23/01/e4/2301e472-66ee-e5da-9857-4cd6252e956a/AppIcon-0-0-1x_U007ephone-0-1-85-220.png/512x512bb.jpg",
+      "iconEmoji": "☁️",
+      "category": ["ios", "health"],
       "platform": "iOS",
       "price": "Free",
       "github": "https://github.com/akeslo",
-      "appStore": "https://apps.apple.com/us/app/pinkcloud-timer/id6744997715"
+      "homepage": "https://apps.apple.com/us/app/pinkcloud-timer/id6744997715"
     },
     {
       "id": "breathe-wisely",
       "name": "Breathe Wisely",
       "subtitle": "Simple Stress Relief",
       "description": "A simple breathing exercise app designed for quick and effective stress relief.",
-      "category": ["health", "wellness"],
+      "icon": "https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/fd/1c/dd/fd1cddd8-acb4-1db3-8031-6d3bfafa7aee/AppIcon-0-0-1x_U007epad-0-1-85-220.png/512x512bb.jpg",
+      "iconEmoji": "🌬️",
+      "category": ["ios", "health"],
       "platform": "iOS",
       "price": "Free",
       "github": "https://github.com/akeslo",
-      "appStore": "https://apps.apple.com/us/app/breathe-wisely/id6744491087"
+      "homepage": "https://apps.apple.com/us/app/breathe-wisely/id6744491087"
     },
     {
       "id": "unified-audio-control",
       "name": "Unified Audio Control",
       "subtitle": "One control for all your audio",
       "description": "Centralized audio management tool for controlling multiple audio sources from one interface.",
-      "category": ["audio", "utilities"],
+      "icon": null,
+      "iconEmoji": "🎛️",
+      "category": ["macos", "audio", "utilities"],
       "platform": "Python",
       "price": "Free",
       "github": "https://github.com/akeslo/Unified-Audio-Control"
@@ -65,7 +84,9 @@
       "name": "WhisperWrap",
       "subtitle": "Whisper made easy",
       "description": "A convenient wrapper for OpenAI Whisper, simplifying speech-to-text transcription workflows.",
-      "category": ["audio", "developer-tools"],
+      "icon": null,
+      "iconEmoji": "🗣️",
+      "category": ["macos", "audio", "developer-tools"],
       "platform": "Python",
       "price": "Free",
       "github": "https://github.com/akeslo/WhisperWrap"
@@ -75,6 +96,8 @@
       "name": "AI User Scripts",
       "subtitle": "AI-powered browser scripts",
       "description": "A collection of AI-enhanced user scripts for automating and improving browser workflows.",
+      "icon": null,
+      "iconEmoji": "🤖",
       "category": ["automation", "developer-tools"],
       "platform": "JavaScript",
       "price": "Free",
