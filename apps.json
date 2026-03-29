@@ -2,106 +2,236 @@
   "$schema": "https://wvw.dev/apps.schema.json",
   "store": {
     "name": "Akeslo Apps",
-    "developer": "akeslo",
+    "developer": "Adam Keslo",
+    "tagline": "iOS, macOS, and web apps built to solve real problems",
+    "url": "https://akeslo.com",
     "github": "https://github.com/akeslo"
   },
+  "featured": [
+    {
+      "id": "bridge-your-budget",
+      "headline": "WEB APP",
+      "title": "Bridge Your Budget",
+      "subtitle": "Automatically sync your Amazon purchases with YNAB — never manually enter transactions again."
+    },
+    {
+      "id": "breathe-wisely",
+      "headline": "TOP RATED",
+      "title": "Breathe Wisely",
+      "subtitle": "Science-based breathing exercises and guided meditation for stress relief in just a few minutes."
+    },
+    {
+      "id": "unified-audio-control",
+      "headline": "MACOS UTILITY",
+      "title": "Unified Audio Control",
+      "subtitle": "One menu bar app to control all your audio devices, volumes, and display brightness."
+    }
+  ],
   "categories": [
     { "id": "ios", "name": "iOS" },
     { "id": "macos", "name": "macOS" },
+    { "id": "web", "name": "Web" },
     { "id": "audio", "name": "Audio" },
     { "id": "utilities", "name": "Utilities" },
     { "id": "productivity", "name": "Productivity" },
     { "id": "health", "name": "Health & Wellness" },
+    { "id": "finance", "name": "Finance" },
     { "id": "developer-tools", "name": "Developer Tools" },
     { "id": "automation", "name": "Automation" }
   ],
   "apps": [
     {
+      "id": "bridge-your-budget",
+      "name": "Bridge Your Budget",
+      "subtitle": "Auto-sync Amazon purchases to YNAB",
+      "description": "Stop manually entering Amazon purchases in YNAB. Bridge Your Budget automatically syncs your Amazon orders with full product details so your budget stays accurate without the effort.",
+      "longDescription": "Bridge Your Budget connects your Amazon account (US and Canada) to YNAB and automatically syncs your purchases daily. Instead of seeing mystery \"Amazon.com $47.99\" charges, your YNAB transactions show exactly what you bought — making categorization effortless. Setup takes 2 minutes, no Amazon Prime required, and your data is protected with bank-level AES-128 encryption.",
+      "icon": null,
+      "iconEmoji": "💰",
+      "category": ["web", "finance", "productivity"],
+      "platform": "Web",
+      "price": "$1.99/mo",
+      "github": "https://github.com/akeslo",
+      "homepage": "https://bridgeyourbudget.com",
+      "features": [
+        "Automatic daily sync of Amazon orders to YNAB",
+        "Full product details on every transaction",
+        "Supports Amazon USA and Canada",
+        "2-minute guided setup",
+        "Bank-level AES-128 encryption",
+        "14-day free trial, no credit card required",
+        "Dark mode support"
+      ]
+    },
+    {
       "id": "podcast-ad-remover",
       "name": "Podcast Ad Remover",
-      "subtitle": "Skip the ads, keep the content",
-      "description": "Automatically detects and removes advertisements from podcast audio files.",
+      "subtitle": "AI-powered ad detection and removal",
+      "description": "Downloads podcasts, transcribes them with Whisper, detects ads using LLMs, and removes them — then generates custom ad-free RSS feeds.",
+      "longDescription": "AGPAR (AI-Generated Podcast Ad Remover) uses multi-LLM ad detection with support for Gemini, GPT-4, Claude, and OpenRouter to identify and remove ads, intros, and outros from podcast episodes. It handles local Whisper transcription, FFmpeg audio editing, and generates custom RSS feeds for ad-free listening. Includes a full admin dashboard, processing queue with pause/resume/cancel, AI-generated episode summaries, and Docker/Unraid deployment support.",
       "icon": null,
       "iconEmoji": "🎙️",
-      "category": ["macos", "audio", "utilities"],
+      "category": ["macos", "audio", "utilities", "automation"],
       "platform": "Python",
       "price": "Free",
-      "github": "https://github.com/akeslo/podcast-ad-remover"
+      "language": "Python",
+      "github": "https://github.com/akeslo/podcast-ad-remover",
+      "homepage": "https://github.com/akeslo/podcast-ad-remover",
+      "features": [
+        "Multi-LLM ad detection (Gemini, GPT-4, Claude, OpenRouter)",
+        "Local Whisper transcription with FFmpeg editing",
+        "Custom RSS feed generation for ad-free listening",
+        "Intro and outro removal",
+        "AI-generated episode summaries",
+        "Processing queue with pause, resume, and cancel",
+        "Admin dashboard",
+        "Docker and Unraid deployment support"
+      ]
     },
     {
       "id": "rerun-timer",
       "name": "Rerun Timer",
-      "subtitle": "The Infinite Loop Timer",
-      "description": "A looping timer that automatically restarts, perfect for interval training and recurring tasks.",
+      "subtitle": "Looping interval timer with Live Activities",
+      "description": "A looping timer that automatically restarts, perfect for interval training, practice sessions, and recurring tasks. Supports Lock Screen, Dynamic Island, and Voice Mode.",
+      "longDescription": "Rerun Timer lets you set customizable intervals from 5 seconds to 60 minutes with repeating or infinite loop options. Track your timer from the Lock Screen and Dynamic Island with live progress updates. Voice Mode speaks countdowns aloud, and background audio alerts ensure you never miss a cycle — even when your phone is muted. Designed for fitness intervals, meditation, study sessions, and any timed routine.",
       "icon": "https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/0e/98/c3/0e98c388-eb8a-3d15-dba3-34d3600b76d9/AppIcon-0-0-1x_U007epad-0-1-85-220.png/512x512bb.jpg",
       "iconEmoji": "⏱️",
       "category": ["ios", "productivity", "utilities"],
       "platform": "iOS",
       "price": "Free",
+      "language": "Swift",
       "github": "https://github.com/akeslo",
-      "homepage": "https://apps.apple.com/us/app/rerun-timer/id6755941416"
+      "homepage": "https://apps.apple.com/us/app/rerun-timer/id6755941416",
+      "features": [
+        "Customizable intervals from 5 seconds to 60 minutes",
+        "Infinite loop or specific repeat counts",
+        "Lock Screen and Dynamic Island live progress",
+        "Voice Mode with spoken countdowns",
+        "Background audio alerts even when muted",
+        "Always-On display support",
+        "Dark mode"
+      ]
     },
     {
       "id": "pinkcloud-timer",
       "name": "PinkCloud Timer",
-      "subtitle": "Personal sobriety companion",
-      "description": "A personal sobriety companion that tracks your journey and celebrates your milestones.",
+      "subtitle": "Track your sobriety with precision",
+      "description": "A personal sobriety companion that tracks your journey to the second, celebrates milestones with confetti, and keeps you motivated with gentle reminders.",
+      "longDescription": "PinkCloud Timer tracks your sobriety with second-level precision and celebrates every milestone along the way. Customize it for any vice, view your relapse history for honest self-reflection, and set gentle notification reminders to stay on track. The neon-inspired design makes checking in feel encouraging rather than clinical. Your data stays completely private — no data is collected or shared.",
       "icon": "https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/23/01/e4/2301e472-66ee-e5da-9857-4cd6252e956a/AppIcon-0-0-1x_U007ephone-0-1-85-220.png/512x512bb.jpg",
       "iconEmoji": "☁️",
       "category": ["ios", "health"],
       "platform": "iOS",
       "price": "Free",
+      "language": "Swift",
       "github": "https://github.com/akeslo",
-      "homepage": "https://apps.apple.com/us/app/pinkcloud-timer/id6744997715"
+      "homepage": "https://apps.apple.com/us/app/pinkcloud-timer/id6744997715",
+      "features": [
+        "Second-level precision sobriety tracking",
+        "Milestone celebrations with confetti animations",
+        "Customizable vice selection",
+        "Gentle customizable notification reminders",
+        "Relapse history viewing",
+        "Neon-inspired design",
+        "No data collected — fully private"
+      ]
     },
     {
       "id": "breathe-wisely",
       "name": "Breathe Wisely",
-      "subtitle": "Simple Stress Relief",
-      "description": "A simple breathing exercise app designed for quick and effective stress relief.",
+      "subtitle": "Guided breathing and meditation exercises",
+      "description": "Science-based breathing exercises and guided meditation to reduce stress, boost energy, and improve focus — all in just a few minutes a day.",
+      "longDescription": "Breathe Wisely offers customizable breathing exercises with adjustable inhale, hold, and exhale times, plus science-based techniques like the 4-7-8 method. Follow guided programs, track your progress with detailed statistics, unlock achievements, and personalize the experience with custom themes and soothing sounds. Narrated guidance and engaging circle animations make each session calming and intuitive.",
       "icon": "https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/fd/1c/dd/fd1cddd8-acb4-1db3-8031-6d3bfafa7aee/AppIcon-0-0-1x_U007epad-0-1-85-220.png/512x512bb.jpg",
       "iconEmoji": "🌬️",
       "category": ["ios", "health"],
       "platform": "iOS",
       "price": "Free",
+      "language": "Swift",
       "github": "https://github.com/akeslo",
-      "homepage": "https://apps.apple.com/us/app/breathe-wisely/id6744491087"
+      "homepage": "https://apps.apple.com/us/app/breathe-wisely/id6744491087",
+      "features": [
+        "Customizable breathing exercises (inhale, hold, exhale times)",
+        "Science-based techniques including 4-7-8 method",
+        "Guided programs and session durations",
+        "Soothing ambient sounds",
+        "Progress tracking and statistics",
+        "Achievement system",
+        "Custom themes and narrated guidance"
+      ]
     },
     {
       "id": "unified-audio-control",
       "name": "Unified Audio Control",
-      "subtitle": "One control for all your audio",
-      "description": "Centralized audio management tool for controlling multiple audio sources from one interface.",
+      "subtitle": "Menu bar audio and display manager",
+      "description": "A native macOS menu bar utility that consolidates audio device switching, volume control, and external display brightness into a single popover.",
+      "longDescription": "Unified Audio Control is a native Swift/SwiftUI menu bar app for macOS that brings all your audio and display controls into one place. Switch CoreAudio output devices, control Aggregate Device volumes, adjust Apple and external display brightness via DDC/CI, set global hotkeys, and rename devices for clarity. Supports Bluetooth and USB hot-plug detection so new devices appear automatically.",
       "icon": null,
       "iconEmoji": "🎛️",
       "category": ["macos", "audio", "utilities"],
-      "platform": "Python",
+      "platform": "macOS",
       "price": "Free",
-      "github": "https://github.com/akeslo/Unified-Audio-Control"
+      "language": "Swift",
+      "github": "https://github.com/akeslo/Unified-Audio-Control",
+      "homepage": "https://github.com/akeslo/Unified-Audio-Control",
+      "requirements": "macOS 13+",
+      "features": [
+        "CoreAudio output device switching",
+        "Aggregate Device volume control",
+        "Apple and external display brightness via DDC/CI",
+        "HUD overlays for visual feedback",
+        "Global hotkeys",
+        "Device and display renaming",
+        "Bluetooth and USB hot-plug detection"
+      ]
     },
     {
       "id": "whisperwrap",
       "name": "WhisperWrap",
-      "subtitle": "Whisper made easy",
-      "description": "A convenient wrapper for OpenAI Whisper, simplifying speech-to-text transcription workflows.",
+      "subtitle": "System-wide dictation and transcription",
+      "description": "A macOS menu bar app for system-wide dictation with a customizable hotkey, drag-and-drop file transcription, and text-to-speech — all processed locally with Whisper.",
+      "longDescription": "WhisperWrap puts speech-to-text and text-to-speech in your menu bar. Trigger system-wide dictation with Option+Space (customizable), drag and drop audio files for transcription, or use built-in text-to-speech with system voices. All transcription runs locally using faster-whisper with multiple model sizes from Tiny to Large. WhisperWrap manages its own private Python environment so there's nothing extra to install.",
       "icon": null,
       "iconEmoji": "🗣️",
       "category": ["macos", "audio", "developer-tools"],
-      "platform": "Python",
+      "platform": "macOS",
       "price": "Free",
-      "github": "https://github.com/akeslo/WhisperWrap"
+      "language": "Swift",
+      "github": "https://github.com/akeslo/WhisperWrap",
+      "homepage": "https://github.com/akeslo/WhisperWrap",
+      "requirements": "macOS 13.0+, Python 3.10+",
+      "features": [
+        "System-wide dictation with customizable hotkey",
+        "Drag-and-drop file transcription",
+        "Text-to-speech via system voices",
+        "Local processing with faster-whisper",
+        "Multiple Whisper model sizes (Tiny through Large)",
+        "Private Python environment management",
+        "Menu bar app with minimal footprint"
+      ]
     },
     {
       "id": "ai-user-scripts",
       "name": "AI User Scripts",
-      "subtitle": "AI-powered browser scripts",
-      "description": "A collection of AI-enhanced user scripts for automating and improving browser workflows.",
+      "subtitle": "Bulk delete AI chat conversations",
+      "description": "Browser user scripts that add a \"Bulk Delete\" button to Gemini, Claude, and ChatGPT — clean up hundreds of conversations in seconds.",
+      "longDescription": "AI User Scripts is a collection of Tampermonkey/Violentmonkey user scripts that add bulk deletion capability to major AI chat platforms. Instead of deleting conversations one by one, install the script for your platform and clear out old chats in bulk. Supports Google Gemini, Anthropic Claude, and OpenAI ChatGPT.",
       "icon": null,
       "iconEmoji": "🤖",
       "category": ["automation", "developer-tools"],
-      "platform": "JavaScript",
+      "platform": "Browser",
       "price": "Free",
-      "github": "https://github.com/akeslo/AI_User_Scripts"
+      "language": "JavaScript",
+      "github": "https://github.com/akeslo/AI_User_Scripts",
+      "homepage": "https://github.com/akeslo/AI_User_Scripts",
+      "requirements": "Violentmonkey or Tampermonkey browser extension",
+      "features": [
+        "Bulk delete conversations on Gemini",
+        "Bulk delete conversations on Claude",
+        "Bulk delete conversations on ChatGPT",
+        "One-click bulk deletion button",
+        "Works with Violentmonkey and Tampermonkey"
+      ]
     }
   ]
 }
