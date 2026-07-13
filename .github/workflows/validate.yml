@@ -1,0 +1,38 @@
+name: Validate apps.json
+
+on:
+  push:
+    paths:
+      - "apps.json"
+      - "apps.schema.json"
+      - "validate-apps.js"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/validate.yml"
+  pull_request:
+    paths:
+      - "apps.json"
+      - "apps.schema.json"
+      - "validate-apps.js"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/validate.yml"
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate apps.json against apps.schema.json
+        run: node validate-apps.js

@@ -1,0 +1,14 @@
+{
+  "name": "wvw-apps-tooling",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Validation tooling for apps.json in the Appétit app store.",
+  "type": "commonjs",
+  "scripts": {
+    "validate": "node validate-apps.js"
+  },
+  "devDependencies": {
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1"
+  }
+}
