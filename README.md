@@ -19,6 +19,25 @@ This repo contains the [`apps.json`](apps.json) data file that powers my [Appeti
 
 The `apps.json` file follows the [Appetit schema](https://wvw.dev/apps.schema.json). It defines the store metadata, categories, featured apps, and app listings. Appetit reads this file to render the storefront.
 
+## Development
+
+### Local Validation
+
+To validate `apps.json` against the schema before pushing:
+
+```bash
+npm install
+npm test
+```
+
+Or use the dedicated validate command:
+
+```bash
+npm run validate path/to/apps.json
+```
+
+This runs the same validation that runs in CI, catching schema violations early.
+
 ## License
 
 MIT

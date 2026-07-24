@@ -219,7 +219,7 @@
       "icon": null,
       "iconEmoji": "🤖",
       "category": ["automation", "developer-tools"],
-      "platform": "Browser",
+      "platform": "Web",
       "price": "Free",
       "language": "JavaScript",
       "github": "https://github.com/akeslo/AI_User_Scripts",

@@ -5,6 +5,7 @@
   "description": "Validation tooling for apps.json in the Appétit app store.",
   "type": "commonjs",
   "scripts": {
+    "test": "node validate-apps.js",
     "validate": "node validate-apps.js"
   },
   "devDependencies": {
