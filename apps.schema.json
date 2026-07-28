@@ -106,7 +106,7 @@
         },
         "_comments": {
           "type": "array",
-          "description": "Auto-populated by build.sh from GitHub Issues API. Not meant to be set manually.",
+          "description": "GitHub issues used as app reviews. Currently not auto-populated; reserved for future implementation.",
           "items": {
             "type": "object",
             "properties": {
