@@ -6,10 +6,12 @@
   "type": "commonjs",
   "scripts": {
     "test": "node validate-apps.js",
-    "validate": "node validate-apps.js"
+    "validate": "node validate-apps.js",
+    "prepare": "husky install"
   },
   "devDependencies": {
     "ajv": "^8.17.1",
-    "ajv-formats": "^3.0.1"
+    "ajv-formats": "^3.0.1",
+    "husky": "^9.1.7"
   }
 }

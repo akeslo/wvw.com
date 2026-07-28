@@ -1,5 +1,7 @@
 # Akeslo Apps
 
+[![Validate apps.json](https://github.com/akeslo/wvw.com/actions/workflows/validate.yml/badge.svg)](https://github.com/akeslo/wvw.com/actions/workflows/validate.yml)
+
 This repo contains the [`apps.json`](apps.json) data file that powers my [Appetit](https://wvw.dev) app store.
 
 ## Apps
