@@ -15,7 +15,7 @@ This repo contains the [`apps.json`](apps.json) data file that powers my [Appeti
 | [Unified Audio Control](https://github.com/akeslo/Unified-Audio-Control) | macOS | Menu bar audio and display manager |
 | [WhisperWrap](https://github.com/akeslo/WhisperWrap) | macOS | System-wide dictation and transcription |
 | [Podcast Ad Remover](https://github.com/akeslo/podcast-ad-remover) | Python | AI-powered podcast ad detection and removal |
-| [AI User Scripts](https://github.com/akeslo/AI_User_Scripts) | Browser | Bulk delete AI chat conversations |
+| [AI User Scripts](https://github.com/akeslo/AI_User_Scripts) | Web | Bulk delete AI chat conversations |
 
 ## How it works
 
