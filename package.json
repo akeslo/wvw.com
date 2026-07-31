@@ -4,6 +4,9 @@
   "private": true,
   "description": "Validation tooling for apps.json in the Appétit app store.",
   "type": "commonjs",
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "test": "node validate-apps.js",
     "validate": "node validate-apps.js",

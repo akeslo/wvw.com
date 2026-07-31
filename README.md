@@ -40,6 +40,8 @@ npm run validate path/to/apps.json
 
 This runs the same validation that runs in CI, catching schema violations early.
 
+**Note:** Running `npm install` automatically sets up a pre-commit hook (via husky) that validates `apps.json` on every commit, so validation errors are caught before you push.
+
 ## License
 
 MIT
