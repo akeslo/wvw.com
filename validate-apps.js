@@ -37,8 +37,67 @@ const data = loadJson(dataPath, "data file");
 const ajv = new Ajv({ allErrors: true, strict: false });
 addFormats(ajv);
 
+/**
+ * Cross-reference checks the JSON Schema cannot express: app ids must be
+ * unique (they are used in URLs and for deduplication), every featured entry
+ * must point at a real app, and every app category must exist in `categories`.
+ * Without these, a typo ships a broken storefront while CI stays green.
+ */
+function checkReferences(doc) {
+  const problems = [];
+  const apps = Array.isArray(doc.apps) ? doc.apps : [];
+  const categories = Array.isArray(doc.categories) ? doc.categories : [];
+
+  const appIds = apps.map((app) => app && app.id).filter((id) => typeof id === "string");
+  const seen = new Set();
+  const duplicates = new Set();
+  for (const id of appIds) {
+    if (seen.has(id)) duplicates.add(id);
+    seen.add(id);
+  }
+  for (const id of duplicates) {
+    problems.push(`/apps duplicate app id "${id}"`);
+  }
+
+  const categoryIds = new Set(
+    categories.map((cat) => cat && cat.id).filter((id) => typeof id === "string")
+  );
+
+  const featured = Array.isArray(doc.featured) ? doc.featured : [];
+  featured.forEach((entry, index) => {
+    if (entry && typeof entry.id === "string" && !seen.has(entry.id)) {
+      problems.push(`/featured/${index}/id "${entry.id}" does not match any app id`);
+    }
+  });
+
+  apps.forEach((app, index) => {
+    const cats = Array.isArray(app && app.category) ? app.category : [];
+    cats.forEach((cat, catIndex) => {
+      if (typeof cat === "string" && !categoryIds.has(cat)) {
+        problems.push(
+          `/apps/${index}/category/${catIndex} "${cat}" is not a declared category id`
+        );
+      }
+    });
+  });
+
+  return problems;
+}
+
 const validate = ajv.compile(schema);
 const valid = validate(data);
+const referenceProblems = valid ? checkReferences(data) : [];
+
+if (referenceProblems.length > 0) {
+  console.error(
+    `✗ ${path.relative(process.cwd(), dataPath)} failed reference validation:\n`
+  );
+  for (const problem of referenceProblems) {
+    console.error(`  - ${problem}`);
+  }
+  console.error(`\n${referenceProblems.length} error(s) found.`);
+  process.exit(1);
+}
 
 if (valid) {
   const appCount = Array.isArray(data.apps) ? data.apps.length : 0;
