@@ -84,9 +84,65 @@ function checkReferences(doc) {
   return problems;
 }
 
+/**
+ * The README's "Apps" table is hand-maintained but describes the same apps as
+ * apps.json, so it silently goes stale (a wrong platform label shipped once and
+ * had to be corrected by hand). Every app must have a row, every row must name a
+ * real app, and the platform label and link must match the data file. The row
+ * description is deliberately not compared — it is prose, not a mirrored field.
+ * Only runs when validating this repo's own apps.json.
+ */
+const README_ROW = /^\|\s*\[([^\]]+)\]\(([^)]+)\)\s*\|([^|]*)\|([^|]*)\|\s*$/gm;
+
+function checkReadme(doc) {
+  const problems = [];
+  const readmePath = path.join(__dirname, "README.md");
+  if (!fs.existsSync(readmePath)) return problems;
+
+  const rows = [...fs.readFileSync(readmePath, "utf8").matchAll(README_ROW)].map(
+    (m) => ({ name: m[1], url: m[2], platform: m[3].trim() })
+  );
+  if (rows.length === 0) return problems;
+
+  const apps = Array.isArray(doc.apps) ? doc.apps : [];
+  const byName = new Map(
+    apps.filter((app) => app && typeof app.name === "string").map((app) => [app.name, app])
+  );
+
+  for (const row of rows) {
+    const app = byName.get(row.name);
+    if (!app) {
+      problems.push(`README app table lists "${row.name}", which is not in apps.json`);
+      continue;
+    }
+    if (app.platform !== row.platform) {
+      problems.push(
+        `README app table platform for "${row.name}" is "${row.platform}", apps.json says "${app.platform}"`
+      );
+    }
+    const link = app.homepage || app.github;
+    if (link && link !== row.url) {
+      problems.push(
+        `README app table link for "${row.name}" is "${row.url}", apps.json says "${link}"`
+      );
+    }
+  }
+
+  for (const app of byName.keys()) {
+    if (!rows.some((row) => row.name === app)) {
+      problems.push(`README app table is missing "${app}", which is in apps.json`);
+    }
+  }
+
+  return problems;
+}
+
 const validate = ajv.compile(schema);
 const valid = validate(data);
-const referenceProblems = valid ? checkReferences(data) : [];
+const isRepoDataFile = dataPath === path.join(__dirname, "apps.json");
+const referenceProblems = valid
+  ? checkReferences(data).concat(isRepoDataFile ? checkReadme(data) : [])
+  : [];
 
 if (referenceProblems.length > 0) {
   console.error(
