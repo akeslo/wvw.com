@@ -38,9 +38,26 @@ const ajv = new Ajv({ allErrors: true, strict: false });
 addFormats(ajv);
 
 /**
+ * Collects values that appear more than once, preserving first-seen order.
+ */
+function findDuplicates(values) {
+  const seen = new Set();
+  const duplicates = new Set();
+  for (const value of values) {
+    if (seen.has(value)) duplicates.add(value);
+    seen.add(value);
+  }
+  return { seen, duplicates };
+}
+
+/**
  * Cross-reference checks the JSON Schema cannot express: app ids must be
- * unique (they are used in URLs and for deduplication), every featured entry
- * must point at a real app, and every app category must exist in `categories`.
+ * unique (they are used in URLs and for deduplication), app names must be
+ * unique (they are the join key the README table check below matches on — two
+ * apps sharing a name make that check compare against the wrong record and
+ * still pass), every featured entry must point at a real app and may only
+ * appear once (a repeated id renders the same carousel banner twice), and
+ * every app category must exist in `categories`.
  * Without these, a typo ships a broken storefront while CI stays green.
  */
 function checkReferences(doc) {
@@ -49,14 +66,16 @@ function checkReferences(doc) {
   const categories = Array.isArray(doc.categories) ? doc.categories : [];
 
   const appIds = apps.map((app) => app && app.id).filter((id) => typeof id === "string");
-  const seen = new Set();
-  const duplicates = new Set();
-  for (const id of appIds) {
-    if (seen.has(id)) duplicates.add(id);
-    seen.add(id);
-  }
+  const { seen, duplicates } = findDuplicates(appIds);
   for (const id of duplicates) {
     problems.push(`/apps duplicate app id "${id}"`);
+  }
+
+  const appNames = apps
+    .map((app) => app && app.name)
+    .filter((name) => typeof name === "string");
+  for (const name of findDuplicates(appNames).duplicates) {
+    problems.push(`/apps duplicate app name "${name}"`);
   }
 
   const categoryIds = new Set(
@@ -69,6 +88,13 @@ function checkReferences(doc) {
       problems.push(`/featured/${index}/id "${entry.id}" does not match any app id`);
     }
   });
+
+  const featuredIds = featured
+    .map((entry) => entry && entry.id)
+    .filter((id) => typeof id === "string");
+  for (const id of findDuplicates(featuredIds).duplicates) {
+    problems.push(`/featured duplicate featured id "${id}"`);
+  }
 
   apps.forEach((app, index) => {
     const cats = Array.isArray(app && app.category) ? app.category : [];
@@ -140,27 +166,19 @@ function checkReadme(doc) {
 const validate = ajv.compile(schema);
 const valid = validate(data);
 const isRepoDataFile = dataPath === path.join(__dirname, "apps.json");
-const referenceProblems = valid
-  ? checkReferences(data).concat(isRepoDataFile ? checkReadme(data) : [])
-  : [];
+const relPath = path.relative(process.cwd(), dataPath);
 
-if (referenceProblems.length > 0) {
-  console.error(
-    `✗ ${path.relative(process.cwd(), dataPath)} failed reference validation:\n`
-  );
-  for (const problem of referenceProblems) {
-    console.error(`  - ${problem}`);
-  }
-  console.error(`\n${referenceProblems.length} error(s) found.`);
-  process.exit(1);
-}
+// Reference and README checks run even when schema validation fails. Both
+// helpers are defensive about missing/mistyped fields, and gating them on a
+// clean schema pass meant one schema error hid every cross-reference and
+// README error behind it — turning a single broken commit into a fix-push-fail
+// loop, one layer per round trip.
+const referenceProblems = checkReferences(data).concat(
+  isRepoDataFile ? checkReadme(data) : []
+);
 
-if (valid) {
-  const appCount = Array.isArray(data.apps) ? data.apps.length : 0;
-  console.log(`✓ ${path.relative(process.cwd(), dataPath)} is valid against apps.schema.json (${appCount} app(s)).`);
-  process.exit(0);
-} else {
-  console.error(`✗ ${path.relative(process.cwd(), dataPath)} failed schema validation:\n`);
+if (!valid) {
+  console.error(`✗ ${relPath} failed schema validation:\n`);
   for (const err of validate.errors) {
     const location = err.instancePath || "(root)";
     console.error(`  - ${location} ${err.message}`);
@@ -171,6 +189,21 @@ if (valid) {
       if (extra) console.error(`    (${extra})`);
     }
   }
-  console.error(`\n${validate.errors.length} error(s) found.`);
-  process.exit(1);
+  console.error(`\n${validate.errors.length} schema error(s) found.`);
 }
+
+if (referenceProblems.length > 0) {
+  console.error(`${valid ? "" : "\n"}✗ ${relPath} failed reference validation:\n`);
+  for (const problem of referenceProblems) {
+    console.error(`  - ${problem}`);
+  }
+  console.error(`\n${referenceProblems.length} reference error(s) found.`);
+}
+
+if (valid && referenceProblems.length === 0) {
+  const appCount = Array.isArray(data.apps) ? data.apps.length : 0;
+  console.log(`✓ ${relPath} is valid against apps.schema.json (${appCount} app(s)).`);
+  process.exit(0);
+}
+
+process.exit(1);
