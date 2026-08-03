@@ -3,8 +3,13 @@
  * Validates apps.json against apps.schema.json using ajv.
  *
  * Usage:
- *   node validate-apps.js                 # validates ./apps.json
- *   node validate-apps.js path/to/file.json  # validates an arbitrary file
+ *   node validate-apps.js                    # validates ./apps.json against ./README.md
+ *   node validate-apps.js path/to/file.json  # validates an arbitrary file (no README check)
+ *   node validate-apps.js path/to/file.json --readme path/to/README.md
+ *
+ * The `--readme` form exists for the pre-commit hook, which validates the
+ * staged snapshot of both files from a temp directory rather than the working
+ * tree — see .husky/pre-commit.
  */
 
 const fs = require("fs");
@@ -12,10 +17,35 @@ const path = require("path");
 const Ajv = require("ajv");
 const addFormats = require("ajv-formats");
 
+function parseArgs(argv) {
+  let dataArg = null;
+  let readmeArg = null;
+  for (let i = 0; i < argv.length; i += 1) {
+    const arg = argv[i];
+    if (arg === "--readme") {
+      readmeArg = argv[i + 1];
+      if (!readmeArg) {
+        console.error("✗ --readme requires a path argument");
+        process.exit(1);
+      }
+      i += 1;
+    } else if (arg.startsWith("--")) {
+      console.error(`✗ Unknown option: ${arg}`);
+      process.exit(1);
+    } else if (dataArg === null) {
+      dataArg = arg;
+    } else {
+      console.error(`✗ Unexpected extra argument: ${arg}`);
+      process.exit(1);
+    }
+  }
+  return { dataArg, readmeArg };
+}
+
+const { dataArg, readmeArg } = parseArgs(process.argv.slice(2));
+
 const schemaPath = path.join(__dirname, "apps.schema.json");
-const dataPath = process.argv[2]
-  ? path.resolve(process.argv[2])
-  : path.join(__dirname, "apps.json");
+const dataPath = dataArg ? path.resolve(dataArg) : path.join(__dirname, "apps.json");
 
 function loadJson(filePath, label) {
   if (!fs.existsSync(filePath)) {
@@ -125,7 +155,8 @@ function checkReferences(doc) {
  * had to be corrected by hand). Every app must have a row, every row must name a
  * real app, and the platform label and link must match the data file. The row
  * description is deliberately not compared — it is prose, not a mirrored field.
- * Only runs when validating this repo's own apps.json.
+ * Only runs when validating this repo's own apps.json, or against an explicit
+ * --readme path (the pre-commit hook's staged-snapshot mode).
  */
 const README_ROW = /^\|\s*\[([^\]]+)\]\(([^)]+)\)\s*\|([^|]*)\|([^|]*)\|\s*$/gm;
 const README_APPS_HEADING = /^##\s+Apps\s*$/m;
@@ -145,10 +176,19 @@ function readmeAppsSection(text) {
   return next ? text.slice(start, start + next.index) : text.slice(start);
 }
 
-function checkReadme(doc) {
+function checkReadme(doc, readmePath) {
   const problems = [];
-  const readmePath = path.join(__dirname, "README.md");
-  if (!fs.existsSync(readmePath)) return problems;
+  // A missing README used to return clean, which switched the drift check off
+  // entirely the moment the file was renamed or deleted — the same silent
+  // self-disabling failure the zero-parsed-rows branch below guards against.
+  if (!fs.existsSync(readmePath)) {
+    if (Array.isArray(doc.apps) && doc.apps.length > 0) {
+      problems.push(
+        `README not found at ${readmePath}, so the app table cannot be checked against apps.json`
+      );
+    }
+    return problems;
+  }
 
   const section = readmeAppsSection(fs.readFileSync(readmePath, "utf8"));
   if (section === null) {
@@ -216,13 +256,21 @@ const valid = validate(data);
 const isRepoDataFile = dataPath === path.join(__dirname, "apps.json");
 const relPath = path.relative(process.cwd(), dataPath);
 
+// An explicit --readme wins; otherwise the check only applies to this repo's
+// own data file, where README.md is its documented mirror.
+const readmePath = readmeArg
+  ? path.resolve(readmeArg)
+  : isRepoDataFile
+    ? path.join(__dirname, "README.md")
+    : null;
+
 // Reference and README checks run even when schema validation fails. Both
 // helpers are defensive about missing/mistyped fields, and gating them on a
 // clean schema pass meant one schema error hid every cross-reference and
 // README error behind it — turning a single broken commit into a fix-push-fail
 // loop, one layer per round trip.
 const referenceProblems = checkReferences(data).concat(
-  isRepoDataFile ? checkReadme(data) : []
+  readmePath ? checkReadme(data, readmePath) : []
 );
 
 if (!valid) {

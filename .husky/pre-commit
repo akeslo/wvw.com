@@ -1,1 +1,26 @@
-npm test
+#!/bin/sh
+# Validate the STAGED snapshot, not the working tree.
+#
+# `npm test` reads apps.json and README.md off disk, so a partially staged
+# change (git add a good file then keep editing, or `git commit <path>` while
+# other edits sit unstaged) let a broken storefront land with a green hook —
+# exactly the "caught before you push" promise in README § Development.
+# The index holds every tracked file, so `git show :<path>` is the content this
+# commit will actually produce.
+
+set -e
+
+tmp=$(mktemp -d)
+trap 'rm -rf "$tmp"' EXIT
+
+if ! git show :apps.json > "$tmp/apps.json" 2>/dev/null; then
+  # apps.json is untracked or being deleted — nothing staged to validate.
+  npm test
+  exit
+fi
+
+# On failure the redirect still leaves an empty file behind; drop it so the
+# validator reports a missing README rather than an unparseable one.
+git show :README.md > "$tmp/README.md" 2>/dev/null || rm -f "$tmp/README.md"
+
+node validate-apps.js "$tmp/apps.json" --readme "$tmp/README.md"
