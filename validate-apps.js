@@ -78,9 +78,18 @@ function checkReferences(doc) {
     problems.push(`/apps duplicate app name "${name}"`);
   }
 
-  const categoryIds = new Set(
-    categories.map((cat) => cat && cat.id).filter((id) => typeof id === "string")
-  );
+  // Category ids are the join key app.category entries resolve against, so a
+  // repeat renders a duplicate sidebar entry and makes the app-category check
+  // below pass against whichever record happens to be indexed. Same uniqueness
+  // invariant as app ids, app names, and featured ids above.
+  const declaredCategoryIds = categories
+    .map((cat) => cat && cat.id)
+    .filter((id) => typeof id === "string");
+  for (const id of findDuplicates(declaredCategoryIds).duplicates) {
+    problems.push(`/categories duplicate category id "${id}"`);
+  }
+
+  const categoryIds = new Set(declaredCategoryIds);
 
   const featured = Array.isArray(doc.featured) ? doc.featured : [];
   featured.forEach((entry, index) => {
@@ -119,16 +128,55 @@ function checkReferences(doc) {
  * Only runs when validating this repo's own apps.json.
  */
 const README_ROW = /^\|\s*\[([^\]]+)\]\(([^)]+)\)\s*\|([^|]*)\|([^|]*)\|\s*$/gm;
+const README_APPS_HEADING = /^##\s+Apps\s*$/m;
+const README_TABLE_LINE = /^\|.*\|\s*$/gm;
+const README_SEPARATOR_ROW = /^\|[\s|:-]*\|\s*$/;
+
+/**
+ * Isolates the `## Apps` section so the row regex cannot reach tables elsewhere
+ * in the README (any other table with a link in its first column would be read
+ * as an app row and reported as an app missing from apps.json).
+ */
+function readmeAppsSection(text) {
+  const heading = README_APPS_HEADING.exec(text);
+  if (!heading) return null;
+  const start = heading.index + heading[0].length;
+  const next = /^##\s+/m.exec(text.slice(start));
+  return next ? text.slice(start, start + next.index) : text.slice(start);
+}
 
 function checkReadme(doc) {
   const problems = [];
   const readmePath = path.join(__dirname, "README.md");
   if (!fs.existsSync(readmePath)) return problems;
 
-  const rows = [...fs.readFileSync(readmePath, "utf8").matchAll(README_ROW)].map(
+  const section = readmeAppsSection(fs.readFileSync(readmePath, "utf8"));
+  if (section === null) {
+    problems.push("README has no `## Apps` section, so the app table cannot be checked against apps.json");
+    return problems;
+  }
+
+  const rows = [...section.matchAll(README_ROW)].map(
     (m) => ({ name: m[1], url: m[2], platform: m[3].trim() })
   );
-  if (rows.length === 0) return problems;
+
+  // Bailing out silently on zero parsed rows would switch this whole check off
+  // the moment someone reformats the table — the exact silent drift it exists to
+  // catch. Count the raw table lines and complain when they stopped parsing.
+  if (rows.length === 0) {
+    const tableLines = [...section.matchAll(README_TABLE_LINE)].map((m) => m[0]);
+    const dataLines = tableLines.filter((line) => !README_SEPARATOR_ROW.test(line));
+    // First data line is the `| App | Platform | Description |` header.
+    if (dataLines.length > 1) {
+      problems.push(
+        `README app table has ${dataLines.length - 1} row(s) but none match the expected ` +
+          "`| [Name](url) | Platform | Description |` format — the drift check is not running"
+      );
+    } else if (Array.isArray(doc.apps) && doc.apps.length > 0) {
+      problems.push("README `## Apps` section has no app table rows, but apps.json lists apps");
+    }
+    return problems;
+  }
 
   const apps = Array.isArray(doc.apps) ? doc.apps : [];
   const byName = new Map(
