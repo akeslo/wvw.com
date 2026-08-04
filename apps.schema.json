@@ -13,8 +13,8 @@
         "name": { "type": "string", "description": "Store display name." },
         "developer": { "type": "string", "description": "Default developer name shown on app detail pages." },
         "tagline": { "type": "string", "description": "Short tagline for the store." },
-        "url": { "type": "string", "format": "uri", "description": "The store's live URL." },
-        "github": { "type": "string", "format": "uri", "description": "GitHub profile or org URL." }
+        "url": { "type": "string", "format": "uri", "pattern": "^https?://", "description": "The store's live URL." },
+        "github": { "type": "string", "format": "uri", "pattern": "^https?://", "description": "GitHub profile or org URL." }
       }
     },
     "featured": {
@@ -74,7 +74,7 @@
         "subtitle": { "type": "string", "description": "Short tagline shown in list rows." },
         "description": { "type": "string", "description": "One-liner for list views and search." },
         "longDescription": { "type": "string", "description": "Full description for the detail page." },
-        "icon": { "type": ["string", "null"], "format": "uri", "description": "URL to the app icon image (PNG or SVG)." },
+        "icon": { "type": ["string", "null"], "format": "uri", "pattern": "^https?://", "description": "URL to the app icon image (PNG or SVG)." },
         "iconEmoji": { "type": "string", "description": "Fallback emoji when icon is null or fails to load." },
         "iconStyle": { "$ref": "#/definitions/iconStyle" },
         "category": {
@@ -84,15 +84,15 @@
         },
         "platform": { "type": "string", "description": "Platform label (e.g. 'macOS', 'Web', 'Node.js', 'CLI')." },
         "price": { "type": "string", "description": "Price label (e.g. 'Free')." },
-        "github": { "type": "string", "format": "uri", "description": "GitHub repository URL." },
-        "homepage": { "type": ["string", "null"], "format": "uri", "description": "Project homepage URL." },
+        "github": { "type": "string", "format": "uri", "pattern": "^https?://", "description": "GitHub repository URL." },
+        "homepage": { "type": ["string", "null"], "format": "uri", "pattern": "^https?://", "description": "Project homepage URL." },
         "language": { "type": "string", "description": "Primary programming language." },
         "stars": { "type": "integer", "minimum": 0, "description": "GitHub star count." },
         "forks": { "type": "integer", "minimum": 0, "description": "GitHub fork count." },
         "brew": { "type": "string", "description": "Homebrew install command. Triggers the install modal." },
         "installCommand": { "type": "string", "description": "Alternative install command (e.g. 'npx my-app'). Triggers the install modal." },
-        "downloadUrl": { "type": "string", "format": "uri", "description": "Direct download URL (e.g. GitHub Releases latest). Shown as secondary button in install modal." },
-        "buyUrl": { "type": "string", "format": "uri", "description": "Purchase URL for paid apps. When price is not 'Free', a Buy button links here. If omitted, falls back to homepage or github." },
+        "downloadUrl": { "type": "string", "format": "uri", "pattern": "^https?://", "description": "Direct download URL (e.g. GitHub Releases latest). Shown as secondary button in install modal." },
+        "buyUrl": { "type": "string", "format": "uri", "pattern": "^https?://", "description": "Purchase URL for paid apps. When price is not 'Free', a Buy button links here. If omitted, falls back to homepage or github." },
         "requirements": { "type": "string", "description": "System requirements (e.g. 'macOS 15 Sequoia or later')." },
         "features": {
           "type": "array",
@@ -101,7 +101,7 @@
         },
         "screenshots": {
           "type": "array",
-          "items": { "type": "string", "format": "uri" },
+          "items": { "type": "string", "format": "uri", "pattern": "^https?://" },
           "description": "Screenshot URLs shown in the detail page preview section."
         },
         "_comments": {
@@ -111,10 +111,10 @@
             "type": "object",
             "properties": {
               "user": { "type": "string", "description": "GitHub username of the issue author." },
-              "avatar": { "type": "string", "format": "uri", "description": "Avatar URL of the issue author." },
+              "avatar": { "type": "string", "format": "uri", "pattern": "^https?://", "description": "Avatar URL of the issue author." },
               "title": { "type": "string", "description": "Issue title, shown as review title." },
               "body": { "type": "string", "description": "Issue body (truncated to 300 chars)." },
-              "url": { "type": "string", "format": "uri", "description": "Link to the GitHub issue." },
+              "url": { "type": "string", "format": "uri", "pattern": "^https?://", "description": "Link to the GitHub issue." },
               "created_at": { "type": "string", "format": "date-time", "description": "ISO 8601 timestamp." },
               "reactions": {
                 "type": "object",
