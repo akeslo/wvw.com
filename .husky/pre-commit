@@ -23,4 +23,15 @@ fi
 # validator reports a missing README rather than an unparseable one.
 git show :README.md > "$tmp/README.md" 2>/dev/null || rm -f "$tmp/README.md"
 
-node validate-apps.js "$tmp/apps.json" --readme "$tmp/README.md"
+# Same staged-vs-working-tree gap applies to the schema: if it's staged and
+# then edited further, validate-apps.js must see the staged version, not
+# whatever is currently sitting on disk. Fall back to the working-tree copy
+# when the schema isn't tracked/staged at all.
+if git show :apps.schema.json > "$tmp/apps.schema.json" 2>/dev/null; then
+  schema_arg="$tmp/apps.schema.json"
+else
+  rm -f "$tmp/apps.schema.json"
+  schema_arg="apps.schema.json"
+fi
+
+node validate-apps.js "$tmp/apps.json" --readme "$tmp/README.md" --schema "$schema_arg"

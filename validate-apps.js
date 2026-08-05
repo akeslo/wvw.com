@@ -6,10 +6,15 @@
  *   node validate-apps.js                    # validates ./apps.json against ./README.md
  *   node validate-apps.js path/to/file.json  # validates an arbitrary file (no README check)
  *   node validate-apps.js path/to/file.json --readme path/to/README.md
+ *   node validate-apps.js path/to/file.json --readme path/to/README.md --schema path/to/apps.schema.json
  *
- * The `--readme` form exists for the pre-commit hook, which validates the
- * staged snapshot of both files from a temp directory rather than the working
- * tree — see .husky/pre-commit.
+ * The `--readme`/`--schema` forms exist for the pre-commit hook, which
+ * validates the staged snapshot of all three files from a temp directory
+ * rather than the working tree — see .husky/pre-commit. Without `--schema`,
+ * an apps.schema.json edit made *after* `git add` (staged, then kept editing)
+ * would validate against the unstaged working-tree schema instead of what
+ * the commit actually contains — the same staged-vs-working-tree gap the
+ * `--readme` flag exists to close for README.md.
  */
 
 const fs = require("fs");
@@ -20,12 +25,20 @@ const addFormats = require("ajv-formats");
 function parseArgs(argv) {
   let dataArg = null;
   let readmeArg = null;
+  let schemaArg = null;
   for (let i = 0; i < argv.length; i += 1) {
     const arg = argv[i];
     if (arg === "--readme") {
       readmeArg = argv[i + 1];
       if (!readmeArg) {
         console.error("✗ --readme requires a path argument");
+        process.exit(1);
+      }
+      i += 1;
+    } else if (arg === "--schema") {
+      schemaArg = argv[i + 1];
+      if (!schemaArg) {
+        console.error("✗ --schema requires a path argument");
         process.exit(1);
       }
       i += 1;
@@ -39,12 +52,12 @@ function parseArgs(argv) {
       process.exit(1);
     }
   }
-  return { dataArg, readmeArg };
+  return { dataArg, readmeArg, schemaArg };
 }
 
-const { dataArg, readmeArg } = parseArgs(process.argv.slice(2));
+const { dataArg, readmeArg, schemaArg } = parseArgs(process.argv.slice(2));
 
-const schemaPath = path.join(__dirname, "apps.schema.json");
+const schemaPath = schemaArg ? path.resolve(schemaArg) : path.join(__dirname, "apps.schema.json");
 const dataPath = dataArg ? path.resolve(dataArg) : path.join(__dirname, "apps.json");
 
 function loadJson(filePath, label) {
