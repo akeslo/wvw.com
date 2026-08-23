@@ -189,8 +189,8 @@
       "id": "whisperwrap",
       "name": "WhisperWrap",
       "subtitle": "System-wide dictation and transcription",
-      "description": "A macOS menu bar app for system-wide dictation with a customizable hotkey, drag-and-drop file transcription, and text-to-speech — all processed locally with Whisper.",
-      "longDescription": "WhisperWrap puts speech-to-text and text-to-speech in your menu bar. Trigger system-wide dictation with Option+Space (customizable), drag and drop audio files for transcription, or use built-in text-to-speech with system voices. All transcription runs locally using faster-whisper with multiple model sizes from Tiny to Large. WhisperWrap manages its own private Python environment so there's nothing extra to install.",
+      "description": "A macOS menu bar app for system-wide dictation with a customizable hotkey, drag-and-drop file transcription, and text-to-speech — all processed locally with native CoreML.",
+      "longDescription": "WhisperWrap puts speech-to-text and text-to-speech in your menu bar. Trigger system-wide dictation with Option+Space (customizable), drag and drop audio files for transcription, or use built-in text-to-speech with system voices. All transcription runs locally using native CoreML Whisper with multiple model sizes from Tiny to Large — no Python runtime required. Optional Claude AI post-processing (grammar correction, summarization, custom prompts) runs through the Claude Code CLI using your existing login.",
       "icon": "https://raw.githubusercontent.com/akeslo/WhisperWrap/main/Sources/WhisperWrap/Resources/AppIcon.appiconset/icon_1024x1024.png",
       "iconEmoji": "🗣️",
       "category": ["macos", "audio", "developer-tools"],
@@ -199,14 +199,14 @@
       "language": "Swift",
       "github": "https://github.com/akeslo/WhisperWrap",
       "homepage": "https://github.com/akeslo/WhisperWrap",
-      "requirements": "macOS 13.0+, Python 3.10+",
+      "requirements": "macOS 14.0+",
       "features": [
         "System-wide dictation with customizable hotkey",
         "Drag-and-drop file transcription",
         "Text-to-speech via system voices",
-        "Local processing with faster-whisper",
+        "Local processing with native CoreML — no audio leaves the machine",
         "Multiple Whisper model sizes (Tiny through Large)",
-        "Private Python environment management",
+        "Optional Claude AI post-processing via the Claude Code CLI",
         "Menu bar app with minimal footprint"
       ]
     },
