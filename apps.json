@@ -174,7 +174,7 @@
       "language": "Swift",
       "github": "https://github.com/akeslo/Unified-Audio-Control",
       "homepage": "https://github.com/akeslo/Unified-Audio-Control",
-      "requirements": "macOS 13+",
+      "requirements": "macOS 14+",
       "features": [
         "CoreAudio output device switching",
         "Aggregate Device volume control",
