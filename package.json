@@ -8,7 +8,8 @@
     "node": ">=20"
   },
   "scripts": {
-    "test": "node validate-apps.js",
+    "test": "node --test validate-apps.test.js && node validate-apps.js",
+    "test:unit": "node --test validate-apps.test.js",
     "validate": "node validate-apps.js",
     "prepare": "husky"
   },

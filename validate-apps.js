@@ -55,11 +55,6 @@ function parseArgs(argv) {
   return { dataArg, readmeArg, schemaArg };
 }
 
-const { dataArg, readmeArg, schemaArg } = parseArgs(process.argv.slice(2));
-
-const schemaPath = schemaArg ? path.resolve(schemaArg) : path.join(__dirname, "apps.schema.json");
-const dataPath = dataArg ? path.resolve(dataArg) : path.join(__dirname, "apps.json");
-
 function loadJson(filePath, label) {
   if (!fs.existsSync(filePath)) {
     console.error(`✗ ${label} not found: ${filePath}`);
@@ -73,12 +68,6 @@ function loadJson(filePath, label) {
     process.exit(1);
   }
 }
-
-const schema = loadJson(schemaPath, "schema");
-const data = loadJson(dataPath, "data file");
-
-const ajv = new Ajv({ allErrors: true, strict: false });
-addFormats(ajv);
 
 /**
  * Collects values that appear more than once, preserving first-seen order.
@@ -264,55 +253,88 @@ function checkReadme(doc, readmePath) {
   return problems;
 }
 
-const validate = ajv.compile(schema);
-const valid = validate(data);
-const isRepoDataFile = dataPath === path.join(__dirname, "apps.json");
-const relPath = path.relative(process.cwd(), dataPath);
+/**
+ * Drives the CLI: parses argv, loads the schema/data files, runs schema +
+ * reference + README validation, prints results, and exits with the
+ * appropriate status code. Kept out of module scope (and gated below by
+ * `require.main === module`) so that requiring this file for its pure
+ * functions — as validate-apps.test.js does — never triggers a live
+ * validation run or a process.exit call.
+ */
+function main() {
+  const { dataArg, readmeArg, schemaArg } = parseArgs(process.argv.slice(2));
 
-// An explicit --readme wins; otherwise the check only applies to this repo's
-// own data file, where README.md is its documented mirror.
-const readmePath = readmeArg
-  ? path.resolve(readmeArg)
-  : isRepoDataFile
-    ? path.join(__dirname, "README.md")
-    : null;
+  const schemaPath = schemaArg ? path.resolve(schemaArg) : path.join(__dirname, "apps.schema.json");
+  const dataPath = dataArg ? path.resolve(dataArg) : path.join(__dirname, "apps.json");
 
-// Reference and README checks run even when schema validation fails. Both
-// helpers are defensive about missing/mistyped fields, and gating them on a
-// clean schema pass meant one schema error hid every cross-reference and
-// README error behind it — turning a single broken commit into a fix-push-fail
-// loop, one layer per round trip.
-const referenceProblems = checkReferences(data).concat(
-  readmePath ? checkReadme(data, readmePath) : []
-);
+  const schema = loadJson(schemaPath, "schema");
+  const data = loadJson(dataPath, "data file");
 
-if (!valid) {
-  console.error(`✗ ${relPath} failed schema validation:\n`);
-  for (const err of validate.errors) {
-    const location = err.instancePath || "(root)";
-    console.error(`  - ${location} ${err.message}`);
-    if (err.params) {
-      const extra = Object.entries(err.params)
-        .map(([k, v]) => `${k}=${JSON.stringify(v)}`)
-        .join(", ");
-      if (extra) console.error(`    (${extra})`);
+  const ajv = new Ajv({ allErrors: true, strict: false });
+  addFormats(ajv);
+
+  const validate = ajv.compile(schema);
+  const valid = validate(data);
+  const isRepoDataFile = dataPath === path.join(__dirname, "apps.json");
+  const relPath = path.relative(process.cwd(), dataPath);
+
+  // An explicit --readme wins; otherwise the check only applies to this repo's
+  // own data file, where README.md is its documented mirror.
+  const readmePath = readmeArg
+    ? path.resolve(readmeArg)
+    : isRepoDataFile
+      ? path.join(__dirname, "README.md")
+      : null;
+
+  // Reference and README checks run even when schema validation fails. Both
+  // helpers are defensive about missing/mistyped fields, and gating them on a
+  // clean schema pass meant one schema error hid every cross-reference and
+  // README error behind it — turning a single broken commit into a fix-push-fail
+  // loop, one layer per round trip.
+  const referenceProblems = checkReferences(data).concat(
+    readmePath ? checkReadme(data, readmePath) : []
+  );
+
+  if (!valid) {
+    console.error(`✗ ${relPath} failed schema validation:\n`);
+    for (const err of validate.errors) {
+      const location = err.instancePath || "(root)";
+      console.error(`  - ${location} ${err.message}`);
+      if (err.params) {
+        const extra = Object.entries(err.params)
+          .map(([k, v]) => `${k}=${JSON.stringify(v)}`)
+          .join(", ");
+        if (extra) console.error(`    (${extra})`);
+      }
     }
+    console.error(`\n${validate.errors.length} schema error(s) found.`);
   }
-  console.error(`\n${validate.errors.length} schema error(s) found.`);
-}
 
-if (referenceProblems.length > 0) {
-  console.error(`${valid ? "" : "\n"}✗ ${relPath} failed reference validation:\n`);
-  for (const problem of referenceProblems) {
-    console.error(`  - ${problem}`);
+  if (referenceProblems.length > 0) {
+    console.error(`${valid ? "" : "\n"}✗ ${relPath} failed reference validation:\n`);
+    for (const problem of referenceProblems) {
+      console.error(`  - ${problem}`);
+    }
+    console.error(`\n${referenceProblems.length} reference error(s) found.`);
   }
-  console.error(`\n${referenceProblems.length} reference error(s) found.`);
+
+  if (valid && referenceProblems.length === 0) {
+    const appCount = Array.isArray(data.apps) ? data.apps.length : 0;
+    console.log(`✓ ${relPath} is valid against apps.schema.json (${appCount} app(s)).`);
+    process.exit(0);
+  }
+
+  process.exit(1);
 }
 
-if (valid && referenceProblems.length === 0) {
-  const appCount = Array.isArray(data.apps) ? data.apps.length : 0;
-  console.log(`✓ ${relPath} is valid against apps.schema.json (${appCount} app(s)).`);
-  process.exit(0);
+if (require.main === module) {
+  main();
 }
 
-process.exit(1);
+module.exports = {
+  parseArgs,
+  findDuplicates,
+  checkReferences,
+  checkReadme,
+  readmeAppsSection,
+};
