@@ -12,7 +12,13 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
 
+const fs = require("fs");
+const os = require("os");
+const path = require("path");
+
 const {
+  parseArgs,
+  loadJson,
   findDuplicates,
   checkReferences,
   checkReadme,
@@ -279,4 +285,97 @@ test("checkReadme", async (t) => {
       assert.ok(problems.some((p) => p.includes("the drift check is not running")));
     }
   );
+});
+
+// parseArgs and loadJson call process.exit on bad input; stub it (and
+// console.error) so the failure path is observable instead of fatal.
+function captureExit(fn) {
+  const origExit = process.exit;
+  const origErr = console.error;
+  const errors = [];
+  let exitCode = null;
+  process.exit = (code) => {
+    exitCode = code;
+    throw new Error("process.exit called");
+  };
+  console.error = (msg) => errors.push(String(msg));
+  try {
+    fn();
+  } catch (err) {
+    if (err.message !== "process.exit called") throw err;
+  } finally {
+    process.exit = origExit;
+    console.error = origErr;
+  }
+  return { exitCode, errors };
+}
+
+test("parseArgs", async (t) => {
+  await t.test("returns nulls for no arguments", () => {
+    assert.deepEqual(parseArgs([]), { dataArg: null, readmeArg: null, schemaArg: null });
+  });
+
+  await t.test("parses data path, --readme and --schema", () => {
+    assert.deepEqual(
+      parseArgs(["a.json", "--readme", "R.md", "--schema", "s.json"]),
+      { dataArg: "a.json", readmeArg: "R.md", schemaArg: "s.json" }
+    );
+  });
+
+  await t.test("accepts flags before the data path", () => {
+    assert.deepEqual(parseArgs(["--readme", "R.md", "a.json"]), {
+      dataArg: "a.json",
+      readmeArg: "R.md",
+      schemaArg: null,
+    });
+  });
+
+  await t.test("exits when --readme has no value", () => {
+    const { exitCode, errors } = captureExit(() => parseArgs(["--readme"]));
+    assert.equal(exitCode, 1);
+    assert.ok(errors[0].includes("--readme requires a path"));
+  });
+
+  await t.test("exits when --schema has no value", () => {
+    const { exitCode, errors } = captureExit(() => parseArgs(["a.json", "--schema"]));
+    assert.equal(exitCode, 1);
+    assert.ok(errors[0].includes("--schema requires a path"));
+  });
+
+  await t.test("exits on an unknown option", () => {
+    const { exitCode, errors } = captureExit(() => parseArgs(["--bogus"]));
+    assert.equal(exitCode, 1);
+    assert.ok(errors[0].includes("Unknown option: --bogus"));
+  });
+
+  await t.test("exits on a second positional argument", () => {
+    const { exitCode, errors } = captureExit(() => parseArgs(["a.json", "b.json"]));
+    assert.equal(exitCode, 1);
+    assert.ok(errors[0].includes("Unexpected extra argument: b.json"));
+  });
+});
+
+test("loadJson", async (t) => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "wvw-loadjson-"));
+  t.after(() => fs.rmSync(dir, { recursive: true, force: true }));
+
+  await t.test("parses a valid JSON file", () => {
+    const file = path.join(dir, "ok.json");
+    fs.writeFileSync(file, JSON.stringify({ apps: [] }));
+    assert.deepEqual(loadJson(file, "apps"), { apps: [] });
+  });
+
+  await t.test("exits when the file is missing", () => {
+    const { exitCode, errors } = captureExit(() => loadJson(path.join(dir, "nope.json"), "apps"));
+    assert.equal(exitCode, 1);
+    assert.ok(errors[0].includes("apps not found"));
+  });
+
+  await t.test("exits when the file is not valid JSON", () => {
+    const file = path.join(dir, "bad.json");
+    fs.writeFileSync(file, "{not json");
+    const { exitCode, errors } = captureExit(() => loadJson(file, "apps"));
+    assert.equal(exitCode, 1);
+    assert.ok(errors[0].includes("Failed to parse apps as JSON"));
+  });
 });

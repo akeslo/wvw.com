@@ -333,6 +333,7 @@ if (require.main === module) {
 
 module.exports = {
   parseArgs,
+  loadJson,
   findDuplicates,
   checkReferences,
   checkReadme,
